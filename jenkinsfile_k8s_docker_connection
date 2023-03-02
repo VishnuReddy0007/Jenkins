@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clone code from Git') {
+            steps {
+                git '<git-repo-url>'
+            }
+        }
+        stage('Build Docker image') {
+            steps {
+                sh 'docker build -t <image-name>:<tag> .'
+            }
+        }
+        stage('Push Docker image to DockerHub') {
+            steps {
+                sh 'docker tag <image-name>:<tag> <dockerhub-username>/<image-name>:<tag>'
+                sh 'docker push <dockerhub-username>/<image-name>:<tag>'
+            }
+        }
+        stage('Scan Docker image and email results') {
+            steps {
+                sh 'docker scan <dockerhub-username>/<image-name>:<tag> --accept-license --file <csv-file-name>.csv'
+                // email the CSV file to relevant stakeholders
+            }
+        }
+        stage('Deploy Docker image to Kubernetes cluster') {
+            steps {
+                sh 'kubectl create deployment <deployment-name> --image=<dockerhub-username>/<image-name>:<tag>'
+                // other necessary steps to deploy to Kubernetes
+            }
+        }
+        stage('Email build status') {
+            steps {
+                // use email plugin to send email notification of build status
+            }
+        }
+    }
+}
+
