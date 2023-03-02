@@ -3,37 +3,34 @@ pipeline {
     stages {
         stage('Clone code from Git') {
             steps {
-                git '<git-repo-url>'
+                git 'https://github.com/VishnuReddy0007/maven-web-app.git'
             }
         }
         stage('Build Docker image') {
             steps {
-                sh 'docker build -t <image-name>:<tag> .'
+                sh 'docker build -t 9603775911/maven-web-app-docker:1.0 .'
             }
         }
         stage('Push Docker image to DockerHub') {
             steps {
-                sh 'docker tag <image-name>:<tag> <dockerhub-username>/<image-name>:<tag>'
-                sh 'docker push <dockerhub-username>/<image-name>:<tag>'
+                sh 'docker tag 9603775911/maven-web-app-docker:1.0 <dockerhub-username>/maven-web-app-docker:1.0'
+                sh 'docker push <dockerhub-username>/maven-web-app-docker:1.0'
             }
         }
         stage('Scan Docker image and email results') {
             steps {
-                sh 'docker scan <dockerhub-username>/<image-name>:<tag> --accept-license --file <csv-file-name>.csv'
+                sh 'docker scan <dockerhub-username>/maven-web-app-docker:1.0 --accept-license --file <csv-file-name>.csv'
                 // email the CSV file to relevant stakeholders
             }
         }
         stage('Deploy Docker image to Kubernetes cluster') {
             steps {
-                sh 'kubectl create deployment <deployment-name> --image=<dockerhub-username>/<image-name>:<tag>'
+                sh 'kubectl create deployment maven-web-app --image=<dockerhub-username>/maven-web-app-docker:1.0'
                 // other necessary steps to deploy to Kubernetes
             }
         }
         stage('Email build status') {
             steps {
                 // use email plugin to send email notification of build status
-            }
-        }
-    }
-}
+
 
