@@ -1,0 +1,29 @@
+              pipeline {
+    agent any
+    tools {
+        maven 'maven'
+    }
+    stages {
+        stage('Clone code from Git') {
+            steps {
+                git 'https://github.com/VishnuReddy0007/maven-web-app.git'
+            }
+        }
+        stage("maven Clean package") {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Build Docker image') {
+            steps {
+                sh 'docker build -t 9603775911/maven-web-app-docker:1 .'
+            }
+        }
+        stage('Docker login') {
+                            withCredentials([usernameColonPassword(credentialsId: 'Dockerpwd', variable: 'dockerk8s')]) {
+
+          }
+        }
+        }
+    }
+
